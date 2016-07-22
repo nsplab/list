@@ -1,0 +1,27 @@
+{
+  "name": "list-search",
+  "version": "0.0.1",
+  "description": "UI for list search",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "browserify": "^13.0.1",
+    "del": "^2.2.1",
+    "flux": "^2.1.1",
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^1.5.4",
+    "gulp-util": "^3.0.7",
+    "keymirror": "^0.1.1",
+    "lodash": "^4.13.1",
+    "moment": "latest",
+    "react": "^0.14.8",
+    "react-dom": "^0.14.8",
+    "react-loader": "^2.4.0",
+    "reactify": "^1.1.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  },
+  "author": "Faria Chowdhury",
+  "license": "GPL",
+  "private": true
+}

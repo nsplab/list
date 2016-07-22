@@ -1,0 +1,26 @@
+version: '2'
+services:
+  db:
+    # See https://github.com/sameersbn/docker-postgresql
+    image: sameersbn/postgresql:9.4-23
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - DB_NAME=listdev
+      - DB_USER=devel
+      - DB_PASS=foobar
+    volumes:
+      - ./pgdata:/var/lib/postgresql
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - .:/code
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+# vim: sw=2 ts=2

@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <title>{% block title %}Welcome{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" media="screen" href="{% static 'ext/bootstrap/dist/css/bootstrap.min.css' %}">
+        {% block extrastyles %}{% endblock %}
+        {% block jshead %}{% endblock %}
+    {% endblock %}
+</head>
+<body onunload="">
+<nav class="navbar navbar-default navbar-static-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-main" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button> 
+            <a class="navbar-brand" href="{% url 'lists:index' %}">Lists</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+            </ul>
+        </div>
+    </div>
+</nav>
+{% block container-main %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <h4>Search</h4>
+            </div>
+            <div class="col-md-2">
+                <h4>Browse</h4>
+            </div>
+            <div class="col-md-2">
+                <h4>Create</h4>
+            </div>
+            <div class="col-md-2">
+                <h4>Favorites</h4>
+            </div>
+            <div class="col-md-2">
+                <h4>Drafts</h4>
+            </div>
+            <div class="col-md-2">
+                <h4>My Account</h4>
+            </div>
+        </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+</body>
+</html>
