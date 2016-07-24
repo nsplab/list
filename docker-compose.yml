@@ -3,7 +3,6 @@ services:
   db:
     # See https://github.com/sameersbn/docker-postgresql
     image: sameersbn/postgresql:9.4-23
-    restart: always
     ports:
       - "5432:5432"
     environment:
@@ -13,6 +12,7 @@ services:
       - DB_PASS=foobar
     volumes:
       - ./pgdata:/var/lib/postgresql
+      - ./lists/storedfunc.sql:/storedfunc.sql
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8080

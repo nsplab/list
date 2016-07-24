@@ -11,13 +11,23 @@ Running the initial migration
 
     $ docker-compose run --rm web python manage.py migrate
 
-Starting a new app
+To start a new app
 
-    $ docker-compose run --rm web python manage.py startapp lists
+    $ docker-compose run --rm web python manage.py startapp <app_name>
 
-To bring up the web container
+To bring up the containers:
 
-    $ docker-compose up
+    $ docker-compose up -d db
+    $ docker-compose up -d web
+
+To check the logs:
+
+    $ docker-compose logs db
+    $ docker-compose logs web
+
+To stop (all) the containers:
+
+    $ docker-compose stop
 
 # Links
 * <https://docs.docker.com/compose/django/>

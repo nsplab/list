@@ -75,8 +75,6 @@ class ListSearchView(JSONResponseMixin, generic.View):
         fields = ('id','title','description','recordDate','topic_id','topic__name')
         # cast ValuesQuerySet to list before serializing
         lists = list(qset.values(*fields))
-        if not lists:
-            lists = {}
         context = {
             'lists': lists
         }
