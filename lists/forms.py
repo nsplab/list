@@ -4,7 +4,7 @@ from .models import *
 
 class ListCreateForm(ModelForm):
     class Meta:
-        model = Article
+        model = List
         fields = ['topic','title','description']
 
 class ListItemCreateForm(ModelForm):

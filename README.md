@@ -34,7 +34,7 @@ Activate the web container (this runs the django development server)
 
     $ docker-compose up -d web
 
-Vist the website at localhost:8081/lists/
+Vist the website at localhost:8081/listapp/
 
 Stop the containers:
 

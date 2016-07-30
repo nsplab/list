@@ -1,7 +1,7 @@
 {
-  "name": "list-search",
+  "name": "listapp",
   "version": "0.0.1",
-  "description": "UI for list search",
+  "description": "UI for list app",
   "main": "gulpfile.js",
   "dependencies": {
     "browserify": "^13.0.1",
@@ -17,6 +17,7 @@
     "react-dom": "^0.14.8",
     "react-loader": "^2.4.0",
     "reactify": "^1.1.1",
+    "uuid": "^2.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

@@ -9,14 +9,14 @@ var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 
 var paths = {
-    OUT: 'list_search.js',
+    OUT: 'main.js',
     DEST_SRC: './static_js',
     ENTRY_POINT: './src/js/main.js'
 };
 
 gulp.task('clean:main', function() {
     return del([
-        'static_js/list_search*.js'
+        'static_js/main*.js'
     ]);
 });
 

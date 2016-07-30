@@ -6,12 +6,12 @@ class ListItemInline(admin.TabularInline):
     extra = 3
 
 class ListAdmin(admin.ModelAdmin):
-    list_display = ('topic', 'title', 'recordDate','active','currentlyDraft')
-    list_filter = ['recordDate','active','currentlyDraft']
+    list_display = ('status', 'topic', 'title', 'active','dateCreated')
+    list_filter = ['active','status']
     search_fields = ['title',]
     fieldsets = [
-        (None,               {'fields': ['title','description','topic','currentlyDraft','active']}),
-        ('Date information', {'fields': ['recordDate','lastEditedDate'], 'classes': ['collapse']}),
+        (None,               {'fields': ['title','description','topic','status','active']}),
+        ('Date information', {'fields': ['dateCreated','dateModified'], 'classes': ['collapse']}),
     ]
     inlines = [ListItemInline]
 

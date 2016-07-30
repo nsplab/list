@@ -12,7 +12,7 @@ var configureApi = function() {
 };
 
 var make_api_url = function(part) {
-    return PROTOCOL + '//' + HOST + '/' + part;
+    return PROTOCOL + '//' + HOST + '/listapp/' + part;
 };
 
 var getRequest = function(key, req_url, callback) {
@@ -54,7 +54,7 @@ var getRequest = function(key, req_url, callback) {
 module.exports = {
     configureApi: configureApi,
     searchLists: function(topic, title) {
-        var req_url = make_api_url('lists/search/');
+        var req_url = make_api_url('list/search/');
         if (topic.length && title.length) {
             req_url = req_url + '?topic=' + topic;
             req_url = req_url + '&title=' + title;
