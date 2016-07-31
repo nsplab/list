@@ -1,0 +1,16 @@
+version: '2'
+services:
+  db:
+    # See https://github.com/sameersbn/docker-postgresql
+    build:
+      context: .
+      dockerfile: Dockerfile.windows.db
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - DB_NAME=listdev
+      - DB_USER=devel
+      - DB_PASS=foobar
+
+# vim: sw=2 ts=2
