@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 
 import datetime
+import django
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -10,6 +12,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+
+django.db.models.options.DEFAULT_NAMES += (
+    'es_index_name', 'es_type_name', 'es_mapping'
+)
 
 
 @python_2_unicode_compatible
@@ -21,6 +27,52 @@ class TopicNode(models.Model):
 
     def __str__(self):
         return self.name
+        
+    class Meta:
+        es_index_name = settings.INDEX_NAME
+        es_type_name = 'topicnode'
+        es_mapping = {
+            'properties': {
+                'name': {'type': 'string', 'index': 'analyzed'},
+                'description': {'type': 'string', 'index': 'analyzed'},
+                'dateCreated': {'type': 'date'},
+                'dateModified': {'type': 'date'},
+                'name_complete': {
+                    'type': 'completion',
+                    'analyzer': 'simple',
+                    'payloads': True,
+                    'preserve_separators': True,
+                    'preserve_position_increments': True,
+                    'max_input_length': 30,
+                }
+            }
+        }
+        
+    def es_repr(self):
+        data = {}
+        mapping = self._meta.es_mapping
+        data['_id'] = self.pk
+        for field_name in mapping['properties'].keys():
+            data[field_name] = self.field_es_repr(field_name)
+        return data
+        
+    def field_es_repr(self, field_name):
+        config = self._meta.es_mapping['properties'][field_name]
+        if hasattr(self, 'get_es_%s' % field_name):
+            field_es_value = getattr(self, 'get_es_%s' % field_name)()
+        else:
+            if config['type'] == 'object':
+                related_object = getattr(self, field_name)
+                field_es_value = {}
+                field_es_value['_id'] = related_object.pk
+                for prop in config['properties'].keys():
+                    field_es_value[prop] = getattr(related_object, prop)
+            else:
+                field_es_value = getattr(self, field_name)
+        return field_es_value
+        
+    def get_es_name_complete(self):
+        return {"input": [self.name], 'payload': {"pk": self.pk}}
 
 class TopicEdgeManager(models.Manager):
     def isParent(self, topic_id):
@@ -156,6 +208,70 @@ class List(models.Model):
 
     def __str__(self):
         return self.title
+        
+    class Meta:
+        es_index_name = settings.INDEX_NAME
+        es_type_name = 'list'
+        es_mapping = {
+            'properties': {
+                'title': {'type': 'string', 'index': 'analyzed'},
+                'description': {'type': 'string', 'index': 'analyzed'},
+                'topic': {'type': 'object',
+                          'properties': {
+                              'name': {'type': 'string', 'index': 'analyzed'},
+                              'description': {'type': 'string', 'index': 'analyzed'},
+                          }
+                },
+                'active': {'type': 'boolean', 'include_in_all': False},
+                'status': {'type': 'string', 
+                           'index': 'not_analyzed', 
+                           'include_in_all': False
+                },
+                'creator': {'type': 'string', 
+                            'index': 'not_analyzed',
+                            'include_in_all': False
+                },
+                'lockUser': {'type': 'string', 
+                             'index': 'not_analyzed',
+                             'include_in_all': False
+                },
+                'dateCreated': {'type': 'date', 'include_in_all': False},
+                'dateModified': {'type': 'date', 'include_in_all': False},
+                'listItems': {'type': 'object',
+                              'properties': {
+                                  'title': {'type': 'string', 'index': 'analyzed'},
+                                  'description': {'type': 'string', 'index': 'analyzed'},
+                                  'deepdive': {'type': 'string', 'index': 'analyzed'},
+                                  'active': {'type': 'boolean', 'include_in_all': False},
+                                  'datecreated': {'type': 'date', 'include_in_all': False},
+                                  'datemodified': {'type': 'date', 'include_in_all': False},
+                              }
+                }
+            }
+        }
+        
+    def es_repr(self):
+        data = {}
+        mapping = self._meta.es_mapping
+        data['_id'] = self.pk
+        for field_name in mapping['properties'].keys():
+            data[field_name] = self.field_es_repr(field_name)
+        return data
+        
+    def field_es_repr(self, field_name):
+        config = self._meta.es_mapping['properties'][field_name]
+        if hasattr(self, 'get_es_%s' % field_name):
+            field_es_value = getattr(self, 'get_es_%s' % field_name)()
+        else:
+            if config['type'] == 'object':
+                related_object = getattr(self, field_name)
+                field_es_value = {}
+                field_es_value['_id'] = related_object.pk
+                for prop in config['properties'].keys():
+                    field_es_value[prop] = getattr(related_object, prop)
+            else:
+                field_es_value = getattr(self, field_name)
+        return field_es_value
 
 # ListItem - A single item in a checklist. All items belonging to the same list
 #            have a defined order in that list, which can be accessed and set

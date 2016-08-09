@@ -1,5 +1,7 @@
 import json
 import datetime
+from elasticsearch import Elasticsearch
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -12,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
 from .forms import *
+
+es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 
 def json_serial(obj):
     if isinstance(obj, datetime.datetime):
@@ -48,7 +52,29 @@ class IndexView(generic.TemplateView):
 
 class ListSearchView(JSONResponseMixin, generic.View):
     http_method_names = ['options','get']
-
+    
+    def get_queryset(self):
+        client = settings.ES_CLIENT
+        query = self.request.GET.get('term', '')
+        resp = client.suggest(
+            index=settings.INDEX_NAME,
+            body={
+                'name_complete': {
+                    "text": query,
+                    "completion": {
+                        "field": 'name_complete',
+                    }
+                }
+            }
+        )
+        options = resp['name_complete'][0]['options']
+        data = json.dumps(
+            [{'id': i['payload']['pk'], 'value': i['text']} for i in options]
+        )
+        mimetype = 'application/json'
+        return HttpResponse(data, mimetype)
+    
+    """
     def get_queryset(self):
         filter_kwargs = dict(active=True, status=List.PUBLISHED) # automatic filters to be applied
         key = 'title'
@@ -71,10 +97,10 @@ class ListSearchView(JSONResponseMixin, generic.View):
                         filter_kwargs['topic_id__in'] = topicids
         qset = List.objects.filter(**filter_kwargs).select_related('topic')
         qset = qset.order_by('-dateCreated')
-        return qset
+        return qset"""
 
-    def get_context_data(self):
-        """TODO: add pagination"""
+    """def get_context_data(self):
+        # TODO: add pagination
         qset = self.object_list
         # for now, return the latest 10 results
         ##qset = qset[:10]
@@ -85,12 +111,16 @@ class ListSearchView(JSONResponseMixin, generic.View):
         context = {
             'lists': lists
         }
-        return context
+        return context"""
 
-    def get(self, request, *args, **kwargs):
+    """def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data()
-        return self.render_to_json_response(context)
+        return self.render_to_json_response(context)"""
+        
+    def get(self, request, *args, **kwargs):
+        return self.get_queryset()
+        #return self.render_to_json_response(context)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
